@@ -1,0 +1,5 @@
+C:/Users/siddh/OneDrive/Documents/Desktop/SVFS/build_clean/CMakeFiles/SecureVFS.dir
+C:/Users/siddh/OneDrive/Documents/Desktop/SVFS/build_clean/CMakeFiles/edit_cache.dir
+C:/Users/siddh/OneDrive/Documents/Desktop/SVFS/build_clean/CMakeFiles/rebuild_cache.dir
+C:/Users/siddh/OneDrive/Documents/Desktop/SVFS/build_clean/CMakeFiles/SecureVFS_autogen_timestamp_deps.dir
+C:/Users/siddh/OneDrive/Documents/Desktop/SVFS/build_clean/CMakeFiles/SecureVFS_autogen.dir

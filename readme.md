@@ -1,25 +1,14 @@
-  █████████  █████   █████ ███████████  █████████ 
- ███▒▒▒▒▒███▒▒███   ▒▒███ ▒▒███▒▒▒▒▒▒█ ███▒▒▒▒▒███
-▒███    ▒▒▒  ▒███    ▒███  ▒███   █ ▒ ▒███    ▒▒▒ 
-▒▒█████████  ▒███    ▒███  ▒███████   ▒▒█████████ 
- ▒▒▒▒▒▒▒▒███ ▒▒███   ███   ▒███▒▒▒█    ▒▒▒▒▒▒▒▒███
- ███    ▒███  ▒▒▒█████▒    ▒███  ▒     ███    ▒███
-▒▒█████████     ▒▒███      █████      ▒▒█████████ 
- ▒▒▒▒▒▒▒▒▒       ▒▒▒      ▒▒▒▒▒        ▒▒▒▒▒▒▒▒▒  
+                                               
                                                   
-                                                  
-                                                  
-                                                  
-                                                  
+     <img width="432" height="212" alt="ascii-art-text" src="https://github.com/user-attachments/assets/e9d976e6-4fc4-4baf-b4fe-05869e33c0c4" />
+                                             
 
 
 # SVFS - Secure Virtual File System                             
 A robust, secure file management system with built-in encryption, compression, and user authentication. Files are stored entirely within a secure SQLite database, providing a true virtual file system experience.
 
-![Login Screen](https://github.com/user-attachments/assets/9d574aa9-ab42-4f8b-ad03-7f81fb562130)
-![Main Window](https://github.com/user-attachments/assets/95701253-0b2f-4d67-8d24-be7742462a05)
-![File Operations](https://github.com/user-attachments/assets/48a6b3f4-94ea-4f2e-aa33-6dd9d60311aa)
-![Security Features](https://github.com/user-attachments/assets/8c75a65b-9202-4edd-962f-b7ef7c2aa19d)
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/542d35e8-f442-439e-ab7c-2ec1c444a027" />
+
 
 ## 🚀 Quick Start
 

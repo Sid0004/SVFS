@@ -1,7 +1,4 @@
-                                               
-                                                  
-    <img width="608" height="174" alt="image" src="https://github.com/user-attachments/assets/31c01163-1750-47d2-8d1f-13a0b9c8956d" />
-
+<img width="608" height="174" alt="image" src="https://github.com/user-attachments/assets/57e57737-ae77-49a8-a556-d28d90f240f2" />
 
 
 # SVFS - Secure Virtual File System                             

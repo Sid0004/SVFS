@@ -1,0 +1,36 @@
+# CMake build directories
+/build/
+/build_*/
+/build-clean/
+/build_clean/
+/build_mingw/
+/build_ninja/
+
+# Qt deploy output (DLLs, plugins)
+/platforms/
+/sqldrivers/
+/imageformats/
+/iconengines/
+/styles/
+/tls/
+/generic/
+
+# Autogen and caches
+**/SecureVFS_autogen/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/Makefile
+**/*.obj
+**/*.obj.d
+**/*.rsp
+**/*.a
+**/*.dll
+**/*.exe
+
+# IDE
+.idea/
+.vscode/
+
+# Local DB files produced when running locally
+svfs.db

@@ -262,7 +262,7 @@ A: Simply copy the `.svfsdb` file. That's your entire vault!
 
 ## 🙏 Credits
 
-- **Author**: Siddharth
+- **Author**: 
 - **Created**: August 31, 2025
 - **Framework**: Qt6
 - **Database**: SQLite

@@ -48,6 +48,7 @@ private:
     void pasteFile();
     void cutFile();
     void showAbout();
+    void showEncryptionProof(); // Debug: show raw vs decrypted data
     
     // Advanced operations
     void editFile();
@@ -77,6 +78,7 @@ private:
     QTreeWidget *fileTree = nullptr;
     QTextEdit *filePreview = nullptr;
     class QTabWidget *m_previewTabs = nullptr; // hold preview tabs for toggling
+    QLabel *m_propertiesLabel = nullptr; // properties display in preview tab
     QString m_currentTheme = "System";
     QString m_currentVfsPath = "svfs.db"; // currently opened VFS database file
     QString m_currentPath = "/"; // VFS current directory path

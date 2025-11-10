@@ -134,13 +134,11 @@ void MainWindow::setupUI() {
     QWidget *propertiesWidget = new QWidget();
     QVBoxLayout *propertiesLayout = new QVBoxLayout(propertiesWidget);
     
-    QLabel *propertiesLabel = new QLabel("File Properties");
-    propertiesLabel->setStyleSheet("font-weight: bold; font-size: 14px;");
-    propertiesLayout->addWidget(propertiesLabel);
-    
-    QLabel *propertiesText = new QLabel("Select a file to view properties");
-    propertiesText->setWordWrap(true);
-    propertiesLayout->addWidget(propertiesText);
+    m_propertiesLabel = new QLabel("Select a file to view properties");
+    m_propertiesLabel->setWordWrap(true);
+    m_propertiesLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+    m_propertiesLabel->setStyleSheet("padding: 10px; font-size: 12px;");
+    propertiesLayout->addWidget(m_propertiesLabel);
     propertiesLayout->addStretch();
     
     m_previewTabs->addTab(propertiesWidget, "Properties");
@@ -154,6 +152,39 @@ void MainWindow::setupUI() {
     // Connect signals
     connect(fileTree, &QTreeWidget::itemSelectionChanged, this, [this]() {
         updateActions();
+        // Update properties preview when selection changes
+        QList<QTreeWidgetItem*> selected = fileTree->selectedItems();
+        if (!selected.isEmpty()) {
+            QTreeWidgetItem *item = selected.first();
+            QString itemType = item->data(0, Qt::UserRole + 1).toString();
+            if (itemType == "file") {
+                int fileId = item->data(0, Qt::UserRole).toInt();
+                FileRecord file;
+                if (DatabaseManager::instance().getFile(fileId, file)) {
+                    QString props = QString(
+                        "<b>File Properties</b><br><br>"
+                        "<b>Name:</b> %1<br>"
+                        "<b>Path:</b> %2<br>"
+                        "<b>Size:</b> %3<br>"
+                        "<b>Type:</b> %4<br>"
+                        "<b>Created:</b> %5<br>"
+                        "<b>Modified:</b> %6<br>"
+                        "<b>Encrypted:</b> %7<br>"
+                        "<b>Compressed:</b> %8"
+                    ).arg(file.filename, file.path, formatFileSize(file.size), file.mimeType,
+                          file.createdAt.toString("yyyy-MM-dd HH:mm:ss"), 
+                          file.modifiedAt.toString("yyyy-MM-dd HH:mm:ss"),
+                          file.isEncrypted ? "Yes" : "No",
+                          file.isCompressed ? "Yes" : "No");
+                    m_propertiesLabel->setText(props);
+                }
+            } else {
+                m_propertiesLabel->setText(QString("<b>Selected:</b> %1<br><b>Type:</b> %2")
+                    .arg(item->text(0), itemType == "directory" ? "Folder" : "Item"));
+            }
+        } else {
+            m_propertiesLabel->setText("Select a file to view properties");
+        }
     });
     connect(fileTree, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem *item, int column) {
         Q_UNUSED(column)
@@ -308,9 +339,14 @@ void MainWindow::setupMenuBar() {
     // Help menu
     QMenu *helpMenu = menuBar()->addMenu("&Help");
     
+    QAction *proofAction = new QAction("Show Encryption &Proof", this);
+    proofAction->setStatusTip("Show proof that encryption/compression is working");
+    
     QAction *aboutAction = new QAction("&About", this);
     aboutAction->setStatusTip("About SVFS");
     
+    helpMenu->addAction(proofAction);
+    helpMenu->addSeparator();
     helpMenu->addAction(aboutAction);
     
     // Connect actions
@@ -332,6 +368,7 @@ void MainWindow::setupMenuBar() {
     connect(m_scanAction, &QAction::triggered, this, [this]() { scanDrive(); });
     connect(m_cancelScanAction, &QAction::triggered, this, [this]() { cancelScan(); });
     connect(exitAction, &QAction::triggered, this, &MainWindow::close);
+    connect(proofAction, &QAction::triggered, this, &MainWindow::showEncryptionProof);
     connect(aboutAction, &QAction::triggered, this, [this]() { showAbout(); });
 }
 
@@ -357,11 +394,6 @@ void MainWindow::setupToolBar() {
     
     QAction *refreshAction = new QAction("Refresh", this);
     refreshAction->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
-    QAction *upAction = new QAction("Up", this);
-    upAction->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
-    QAction *togglePreviewAction = new QAction("Toggle Preview", this);
-    togglePreviewAction->setIcon(style()->standardIcon(QStyle::SP_DesktopIcon));
-    togglePreviewAction->setToolTip("Show/Hide preview panel (saves space)");
     
     mainToolBar->addAction(newFileAction);
     mainToolBar->addAction(newFolderAction);
@@ -372,8 +404,7 @@ void MainWindow::setupToolBar() {
     mainToolBar->addAction(deleteAction);
     mainToolBar->addSeparator();
     mainToolBar->addAction(refreshAction);
-    mainToolBar->addAction(upAction);
-    mainToolBar->addAction(togglePreviewAction);
+    
     // Algorithm selectors
     QComboBox *encAlgoCombo = new QComboBox(mainToolBar);
     encAlgoCombo->addItems({"AES-256-GCM", "AES-256-CBC", "ChaCha20-Poly1305"});
@@ -388,6 +419,17 @@ void MainWindow::setupToolBar() {
     themeCombo->setCurrentText(m_currentTheme);
     mainToolBar->addWidget(themeCombo);
     
+    // Add spacer to push toggle preview to right
+    QWidget *spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    mainToolBar->addWidget(spacer);
+    
+    // Toggle preview on the right
+    QAction *togglePreviewAction = new QAction("Toggle Preview", this);
+    togglePreviewAction->setIcon(style()->standardIcon(QStyle::SP_DesktopIcon));
+    togglePreviewAction->setToolTip("Show/Hide preview panel");
+    mainToolBar->addAction(togglePreviewAction);
+    
     // Connect toolbar actions
     connect(newFileAction, &QAction::triggered, this, [this]() { createNewFile(); });
     connect(newFolderAction, &QAction::triggered, this, [this]() { createNewFolder(); });
@@ -395,7 +437,6 @@ void MainWindow::setupToolBar() {
     connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
     connect(deleteAction, &QAction::triggered, this, [this]() { deleteSelected(); });
     connect(refreshAction, &QAction::triggered, this, [this]() { refreshFileTree(); });
-    connect(upAction, &QAction::triggered, this, [this]() { navigateUp(); });
     connect(togglePreviewAction, &QAction::triggered, this, [this]() { togglePreviewPanel(); });
     connect(encAlgoCombo, &QComboBox::currentTextChanged, this, [this](const QString &text){
         using EA = EncryptionManager::EncryptionAlgorithm;
@@ -460,6 +501,14 @@ void MainWindow::loadFileTree(const QString &path) {
         fileItem->setIcon(0, style()->standardIcon(QStyle::SP_FileIcon));
         fileItem->setData(0, Qt::UserRole, file.id);
         fileItem->setData(0, Qt::UserRole + 1, "file");
+        
+        // Color code encrypted/compressed files
+        if (file.isEncrypted) {
+            fileItem->setForeground(3, QBrush(QColor("#e74c3c"))); // Red for encrypted
+            fileItem->setBackground(0, QBrush(QColor(40, 20, 20))); // Dark red background
+        } else if (file.isCompressed) {
+            fileItem->setForeground(3, QBrush(QColor("#3498db"))); // Blue for compressed
+        }
     }
     
     fileTree->expandAll();
@@ -526,16 +575,37 @@ void MainWindow::openFile() {
     
     m_statusLabel->setText(QString("Opening %1...").arg(fileName));
     
+    // Get file record to check encryption status
+    FileRecord fileRecord;
+    bool hasFileRecord = DatabaseManager::instance().getFile(fileId, fileRecord);
+    
     // Get file content from VFS
     QByteArray content;
     if (VFSManager::instance().getFileContent(fileId, content)) {
+        QString displayText;
+        
+        // Add encryption/compression banner if applicable
+        if (hasFileRecord && (fileRecord.isEncrypted || fileRecord.isCompressed)) {
+            displayText = "╔════════════════════════════════════════════════════════╗\n";
+            if (fileRecord.isEncrypted && fileRecord.isCompressed) {
+                displayText += "║  🔐 ENCRYPTED & COMPRESSED FILE (Auto-decrypted)     ║\n";
+            } else if (fileRecord.isEncrypted) {
+                displayText += "║  🔒 ENCRYPTED FILE (Auto-decrypted for viewing)      ║\n";
+            } else {
+                displayText += "║  📦 COMPRESSED FILE (Auto-decompressed)              ║\n";
+            }
+            displayText += "╚════════════════════════════════════════════════════════╝\n\n";
+        }
+        
         if (fileName.endsWith(".txt") || fileName.endsWith(".md") || fileName.endsWith(".cpp") || 
             fileName.endsWith(".h") || fileName.endsWith(".json") || fileName.endsWith(".xml") ||
             fileName.endsWith(".log") || fileName.endsWith(".csv")) {
-            filePreview->setText(QString::fromUtf8(content));
+            displayText += QString::fromUtf8(content);
+            filePreview->setText(displayText);
         } else {
-            filePreview->setText(QString("File: %1\nSize: %2 bytes\nType: Binary\n\nBinary file - content not displayed as text.\n\nUse 'Export' to save this file to disk.")
-                .arg(fileName).arg(content.size()));
+            displayText += QString("File: %1\nSize: %2 bytes\nType: Binary\n\nBinary file - content not displayed as text.\n\nUse 'Export' to save this file to disk.")
+                .arg(fileName).arg(content.size());
+            filePreview->setText(displayText);
         }
         m_statusLabel->setText(QString("Opened: %1 (%2)").arg(fileName).arg(formatFileSize(content.size())));
     } else {
@@ -1144,6 +1214,118 @@ void MainWindow::showAbout() {
         "Built with Qt6 and modern C++17.");
 }
 
+void MainWindow::showEncryptionProof() {
+    QList<QTreeWidgetItem*> selected = fileTree->selectedItems();
+    if (selected.isEmpty()) {
+        QMessageBox::information(this, "No Selection", "Please select a file first.");
+        return;
+    }
+    
+    QTreeWidgetItem *item = selected.first();
+    QString itemType = item->data(0, Qt::UserRole + 1).toString();
+    
+    if (itemType != "file") {
+        QMessageBox::information(this, "Invalid Selection", "Please select a file.");
+        return;
+    }
+    
+    int fileId = item->data(0, Qt::UserRole).toInt();
+    QString fileName = item->text(0);
+    
+    // Get file record directly from database
+    FileRecord file;
+    if (!DatabaseManager::instance().getFile(fileId, file)) {
+        QMessageBox::critical(this, "Error", "Failed to get file information!");
+        return;
+    }
+    
+    // Create proof dialog
+    QDialog *proofDialog = new QDialog(this);
+    proofDialog->setWindowTitle("Encryption/Compression Proof - " + fileName);
+    proofDialog->resize(900, 700);
+    
+    QVBoxLayout *layout = new QVBoxLayout(proofDialog);
+    
+    // Info label
+    QLabel *infoLabel = new QLabel();
+    infoLabel->setWordWrap(true);
+    infoLabel->setStyleSheet("font-weight: bold; padding: 10px; background: #2c3e50; color: white;");
+    QString statusText = QString("File: %1\nEncrypted: %2 | Compressed: %3\nOriginal Size: %4 bytes")
+        .arg(fileName)
+        .arg(file.isEncrypted ? "YES ✓" : "NO ✗")
+        .arg(file.isCompressed ? "YES ✓" : "NO ✗")
+        .arg(file.size);
+    infoLabel->setText(statusText);
+    layout->addWidget(infoLabel);
+    
+    // Tab widget for different views
+    QTabWidget *tabs = new QTabWidget();
+    
+    // Tab 1: Raw Database Storage (hex dump)
+    QTextEdit *rawView = new QTextEdit();
+    rawView->setReadOnly(true);
+    rawView->setFontFamily("Courier New");
+    rawView->setStyleSheet("background: #1e1e1e; color: #00ff00;");
+    
+    QByteArray rawData = file.isEncrypted ? file.encryptedContent : file.content;
+    QString hexDump;
+    hexDump += "=== RAW DATABASE STORAGE (First 1024 bytes) ===\n\n";
+    hexDump += QString("Total stored bytes: %1\n\n").arg(rawData.size());
+    
+    int bytesToShow = qMin(1024, rawData.size());
+    for (int i = 0; i < bytesToShow; i += 16) {
+        hexDump += QString("%1: ").arg(i, 8, 16, QChar('0'));
+        
+        // Hex bytes
+        for (int j = 0; j < 16 && (i + j) < bytesToShow; j++) {
+            hexDump += QString("%1 ").arg((unsigned char)rawData[i + j], 2, 16, QChar('0'));
+        }
+        hexDump += "  ";
+        
+        // ASCII representation
+        for (int j = 0; j < 16 && (i + j) < bytesToShow; j++) {
+            unsigned char c = (unsigned char)rawData[i + j];
+            hexDump += (c >= 32 && c < 127) ? QChar(c) : QChar('.');
+        }
+        hexDump += "\n";
+    }
+    
+    if (file.isEncrypted) {
+        hexDump += "\n\n☠☠☠ THIS IS ENCRYPTED DATA - UNREADABLE! ☠☠☠\n";
+        hexDump += "The above bytes are AES-256 encrypted.\n";
+        hexDump += "Without the decryption key, this data is secure.\n";
+    }
+    
+    rawView->setText(hexDump);
+    tabs->addTab(rawView, "🔐 Raw Storage (Hex)");
+    
+    // Tab 2: Decrypted Content
+    QTextEdit *decryptedView = new QTextEdit();
+    decryptedView->setReadOnly(true);
+    decryptedView->setFontFamily("Courier New");
+    
+    QByteArray decryptedData;
+    if (VFSManager::instance().getFileContent(fileId, decryptedData)) {
+        QString content = QString::fromUtf8(decryptedData);
+        decryptedView->setText("=== DECRYPTED/DECOMPRESSED CONTENT ===\n\n" + content);
+        decryptedView->setStyleSheet("background: #ecf0f1; color: #2c3e50;");
+    } else {
+        decryptedView->setText("Error: Could not decrypt content!");
+        decryptedView->setStyleSheet("background: #e74c3c; color: white;");
+    }
+    tabs->addTab(decryptedView, "✓ Decrypted Content");
+    
+    layout->addWidget(tabs);
+    
+    // Close button
+    QPushButton *closeBtn = new QPushButton("Close");
+    closeBtn->setMinimumHeight(40);
+    connect(closeBtn, &QPushButton::clicked, proofDialog, &QDialog::accept);
+    layout->addWidget(closeBtn);
+    
+    proofDialog->exec();
+}
+
 void MainWindow::exportFile() {
     QList<QTreeWidgetItem*> selected = fileTree->selectedItems();
     if (selected.isEmpty()) {
@@ -1162,15 +1344,80 @@ void MainWindow::exportFile() {
     int fileId = item->data(0, Qt::UserRole).toInt();
     QString fileName = item->text(0);
     
+    // Check if file is encrypted
+    FileRecord fileRecord;
+    bool isEncrypted = false;
+    bool isCompressed = false;
+    if (DatabaseManager::instance().getFile(fileId, fileRecord)) {
+        isEncrypted = fileRecord.isEncrypted;
+        isCompressed = fileRecord.isCompressed;
+    }
+    
+    // Ask user how to export if file is encrypted or compressed
+    bool exportRaw = false;
+    if (isEncrypted || isCompressed) {
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("Export Options");
+        msgBox.setIcon(QMessageBox::Question);
+        
+        QString message = "This file is ";
+        if (isEncrypted && isCompressed) {
+            message += "ENCRYPTED and COMPRESSED";
+        } else if (isEncrypted) {
+            message += "ENCRYPTED";
+        } else {
+            message += "COMPRESSED";
+        }
+        message += ".\n\nHow would you like to export it?";
+        msgBox.setText(message);
+        
+        QPushButton *decryptedBtn = msgBox.addButton("Decrypted/Readable", QMessageBox::ActionRole);
+        QPushButton *rawBtn = msgBox.addButton("Raw (Keep Encrypted)", QMessageBox::ActionRole);
+        msgBox.addButton(QMessageBox::Cancel);
+        
+        msgBox.exec();
+        
+        if (msgBox.clickedButton() == rawBtn) {
+            exportRaw = true;
+        } else if (msgBox.clickedButton() == decryptedBtn) {
+            exportRaw = false;
+        } else {
+            return; // Cancelled
+        }
+    }
+    
     QString savePath = QFileDialog::getSaveFileName(this, "Export File", 
                                                      QDir::homePath() + "/" + fileName,
                                                      "All Files (*.*)");
     if (savePath.isEmpty()) return;
     
-    if (VFSManager::instance().exportFile(fileId, savePath)) {
+    // Export based on user choice
+    bool success = false;
+    if (exportRaw && (isEncrypted || isCompressed)) {
+        // Export raw encrypted/compressed data
+        QByteArray rawData;
+        if (isEncrypted) {
+            rawData = fileRecord.encryptedContent;
+        } else {
+            rawData = fileRecord.content;
+        }
+        
+        QFile file(savePath);
+        if (file.open(QIODevice::WriteOnly)) {
+            qint64 written = file.write(rawData);
+            file.close();
+            success = (written == rawData.size());
+        }
+    } else {
+        // Export decrypted/decompressed data
+        success = VFSManager::instance().exportFile(fileId, savePath);
+    }
+    
+    if (success) {
         m_statusLabel->setText(QString("Exported: %1 to %2").arg(fileName).arg(savePath));
+        QString exportType = exportRaw ? " (RAW ENCRYPTED)" : " (Decrypted)";
         QMessageBox::information(this, "Success", 
-            QString("File exported successfully to:\n%1").arg(savePath));
+            QString("File exported successfully%1 to:\n%2").arg(exportType).arg(savePath));
     } else {
         QMessageBox::critical(this, "Error", 
             "Failed to export file. Check permissions and disk space.");

@@ -22,8 +22,9 @@
 
 LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent) {
     setWindowTitle("Login - Secure Virtual File System");
-    setFixedSize(500, 450);
+    setFixedSize(500, 480);
     setModal(true);
+    setStyleSheet("QDialog { background: #1e1e1e; }");
     
     // Initialize database and VFS
     DatabaseManager::instance().initializeDatabase();
@@ -35,48 +36,47 @@ LoginDialog::LoginDialog(QWidget *parent) : QDialog(parent) {
 void LoginDialog::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(20);
-    mainLayout->setContentsMargins(30, 30, 30, 30);
+mainLayout->setContentsMargins(30, 15, 30, 30);
+
     
     // Header section
     QWidget *headerWidget = new QWidget();
     QVBoxLayout *headerLayout = new QVBoxLayout(headerWidget);
-    headerLayout->setAlignment(Qt::AlignCenter);
-    
-    QLabel *logoLabel = new QLabel("🔐");
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setStyleSheet("font-size: 48px; margin: 10px;");
-    logoLabel->setAccessibleName("Lock Icon");
+    headerLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+headerLayout->setContentsMargins(0, 20, 0, 10); // adds top and bottom padding
+
     
     QLabel *titleLabel = new QLabel("SVFS");
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #2c3e50; margin: 5px;");
+   titleLabel->setStyleSheet("font-size: 32px; font-weight: bold; color: white; margin: 15px; letter-spacing: 4px;");
+
     
     QLabel *subtitleLabel = new QLabel("Secure Virtual File System");
     subtitleLabel->setAlignment(Qt::AlignCenter);
-    subtitleLabel->setStyleSheet("font-size: 12px; color: #7f8c8d; margin: 5px;");
+    subtitleLabel->setStyleSheet("font-size: 13px; color: #b0b0b0; margin-bottom: 10px;");
     
-    headerLayout->addWidget(logoLabel);
     headerLayout->addWidget(titleLabel);
-    headerLayout->addWidget(subtitleLabel);
+    headerLayout->addSpacing(15); // gives breathing space below the header
+
     
     // Login form
     QGroupBox *loginGroup = new QGroupBox("Login");
-    loginGroup->setStyleSheet("QGroupBox { font-weight: bold; border: 2px solid #bdc3c7; border-radius: 5px; margin-top: 10px; padding-top: 10px; }");
+    loginGroup->setStyleSheet("QGroupBox { font-weight: bold; color: white; border: 2px solid #444; border-radius: 5px; margin-top: 10px; padding-top: 10px; background: #2a2a2a; }");
     
     QFormLayout *formLayout = new QFormLayout(loginGroup);
-    formLayout->setSpacing(20);  // Increased spacing
+    formLayout->setSpacing(30);  // Increased spacing
     formLayout->setLabelAlignment(Qt::AlignRight);
     
     userField = new QLineEdit();
     userField->setPlaceholderText("Enter username");
     userField->setMinimumHeight(35);  // Make input boxes taller
-    userField->setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 5px; font-size: 14px;");
+    userField->setStyleSheet("padding: 8px; border: 2px solid #555; border-radius: 5px; font-size: 14px; background: #333; color: white;");
     
     passField = new QLineEdit();
     passField->setEchoMode(QLineEdit::Password);
     passField->setPlaceholderText("Enter password");
     passField->setMinimumHeight(35);  // Make input boxes taller
-    passField->setStyleSheet("padding: 10px; border: 2px solid #bdc3c7; border-radius: 5px; font-size: 14px;");
+    passField->setStyleSheet("padding: 8px; border: 2px solid #555; border-radius: 5px; font-size: 14px; background: #333; color: white;");
     
     formLayout->addRow("Username:", userField);
     formLayout->addRow("Password:", passField);
@@ -86,10 +86,10 @@ void LoginDialog::setupUI() {
     QHBoxLayout *optionsLayout = new QHBoxLayout(optionsWidget);
     
     QCheckBox *rememberMeCheck = new QCheckBox("Remember me");
-    rememberMeCheck->setStyleSheet("color: #2c3e50;");
+    rememberMeCheck->setStyleSheet("color: #ccc;");
     
     QCheckBox *showPasswordCheck = new QCheckBox("Show password");
-    showPasswordCheck->setStyleSheet("color: #2c3e50;");
+    showPasswordCheck->setStyleSheet("color: #ccc;");
     
     optionsLayout->addWidget(rememberMeCheck);
     optionsLayout->addStretch();
@@ -171,6 +171,7 @@ void LoginDialog::setupUI() {
     // Assemble main layout
     mainLayout->addWidget(headerWidget);
     mainLayout->addWidget(loginGroup);
+    mainLayout->addStretch();  // Push everything else downward
     mainLayout->addWidget(buttonWidget);
     mainLayout->addWidget(createAccountBtn);
     mainLayout->addWidget(statusLabel);

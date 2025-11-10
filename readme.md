@@ -4,7 +4,9 @@
 
 # SVFS - Secure Virtual File System                             
 A robust, secure file management system with built-in encryption, compression, and user authentication. Files are stored entirely within a secure SQLite database, providing a true virtual file system experience.
-
+##Login window
+<img width="651" height="664" alt="image" src="https://github.com/user-attachments/assets/5d0a9d6b-be78-4ab8-a98b-ebe45104602f" />
+##Main window
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/542d35e8-f442-439e-ab7c-2ec1c444a027" />
 
 

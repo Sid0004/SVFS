@@ -34,32 +34,32 @@ SecureVFS.exe
 
 If the app exits immediately, create a user first (New VFS) or add logging. A default test user is NOT auto-created.
 
-## 🔑 Key Features
+## Key Features
 
 ### Virtual File System
-- ✅ All files stored IN the VFS database (not external links)
-- ✅ Built-in text editor - create files directly in VFS
-- ✅ Import files FROM your computer INTO VFS
-- ✅ Export files FROM VFS to your computer
-- ✅ No external file dependencies
+-  All files stored IN the VFS database (not external links)
+-  Built-in text editor - create files directly in VFS
+-  Import files FROM your computer INTO VFS
+-  Export files FROM VFS to your computer
+-  No external file dependencies
 
 ### Security & Encryption
-- 🔒 **Modern ciphers** – AES‑256‑GCM (default), AES‑256‑CBC, ChaCha20‑Poly1305
-- 🔁 **Algorithm selector** – switch encryption and compression from the toolbar or Settings
-- 🔓 **Decrypt on demand** – remove encryption when needed
-- 📦 **Compression** – ZLIB built-in; optional LZ4/Zstd when available
-- 📂 **Decompress instantly** – auto-detected during decrypt via header flags
-- 🔐 **User Authentication** - Secure login with salted passwords
-- 👤 **Multi-User Support** - Each user has isolated vault
+-  **Modern ciphers** – AES‑256‑GCM (default), AES‑256‑CBC, ChaCha20‑Poly1305
+-  **Algorithm selector** – switch encryption and compression from the toolbar or Settings
+-  **Decrypt on demand** – remove encryption when needed
+-  **Compression** – ZLIB built-in; optional LZ4/Zstd when available
+-  **Decompress instantly** – auto-detected during decrypt via header flags
+-  **User Authentication** - Secure login with salted passwords
+-  **Multi-User Support** - Each user has isolated vault
 
 ### File Operations
-- 📝 Create/Edit text files with built-in editor
-- 📥 Import files from local disk
-- 📤 Export files to local disk
-- 🗂️ Create folders and organize files
-- 🔍 Search across all files
-- ❌ Delete, rename, copy files
-- ℹ️ View detailed file properties
+-  Create/Edit text files with built-in editor
+-  Import files from local disk
+-  Export files to local disk
+-  Create folders and organize files
+-  Search across all files
+-  Delete, rename, copy files
+-  View detailed file properties
 
 ### Advanced Features
 - **Context Menu**: Right-click for all operations
@@ -87,8 +87,8 @@ Unlike traditional file systems, SVFS stores **ALL file content inside an SQLite
    - **Import**: Bring existing files INTO the VFS
    - **Create New**: Write text files directly in built-in editor
 4. **Secure Files**:
-   - Right-click → 🔒 Encrypt (AES-256)
-   - Right-click → 📦 Compress (save space)
+   - Right-click →  Encrypt (AES-256)
+   - Right-click →  Compress (save space)
 5. **Edit Anytime**: Right-click → Edit (even encrypted files)
 6. **Export When Needed**: Right-click → Export (extract to disk)
 
@@ -159,8 +159,8 @@ make -j$(nproc)
 1. Double-click encrypted file → View in preview
 2. Right-click → Edit → Makes changes
 3. Save → Automatically re-encrypted
-4. Right-click → 🔓 Decrypt → Remove encryption
-5. Right-click → 🔒 Encrypt → Re-encrypt anytime
+4. Right-click →  Decrypt → Remove encryption
+5. Right-click →  Encrypt → Re-encrypt anytime
 ```
 
 ### Exporting for Sharing
@@ -173,7 +173,7 @@ make -j$(nproc)
 5. Original stays secure in VFS
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Core Components
 
@@ -193,16 +193,16 @@ files: id, filename, path, content, encrypted_content, mime_type,
 directories: id, name, path, parent_id, user_id, created_at
 ```
 
-## 🔒 Security Notes
+##  Security Notes
 
-### ✅ What's Implemented
+### What's Implemented
 - AES‑256‑GCM (default), AES‑256‑CBC, ChaCha20‑Poly1305
 - PBKDF2‑HMAC‑SHA256 key derivation (100K iterations)
 - Per-user file isolation
 - Header format with magic+version+algorithm+flags (compression embedded)
 - SHA‑256 checksums for content verification
 
-### ⚠️ Production Recommendations
+###  Production Recommendations
 For real-world use, enhance with:
 - Argon2 for password hashing
 - Hardware-backed key storage (OS keychain/TPM)
@@ -210,7 +210,7 @@ For real-world use, enhance with:
 - Backup/recovery and key rotation
 - 2FA authentication
 
-## 🎯 Use Cases
+##  Use Cases
 
 - **Personal Document Vault**: Secure storage for sensitive documents
 - **Password Manager**: Store encrypted text files with passwords
@@ -220,7 +220,7 @@ For real-world use, enhance with:
 - **Archive**: Compress old files, save space
 - **Multi-User**: Family members with separate vaults
 
-## 🤝 Contributing
+##  Contributing
 
 Areas for improvement:
 - WebDAV/cloud sync
@@ -239,7 +239,7 @@ Areas for improvement:
 - **C++17 compiler** (MSVC/GCC/Clang)
 - **SQLite** (included with Qt)
 
-## 📞 Support & Troubleshooting
+##  Support & Troubleshooting
 
 **Q: I forgot my password!**  
 A: Unfortunately, passwords cannot be recovered. Keep backups!
@@ -262,7 +262,7 @@ A: Yes! Each user sees only their files. Create accounts in login dialog.
 **Q: How do I backup?**  
 A: Simply copy the `.svfsdb` file. That's your entire vault!
 
-## 🙏 Credits
+##  Credits
 
 - **Author**: 
 - **Created**: August 31, 2025
@@ -272,6 +272,6 @@ A: Simply copy the `.svfsdb` file. That's your entire vault!
 
 ---
 
-**⚠️ Remember**: This is a demonstration/educational project. For production use with sensitive data, implement additional security measures and conduct a security audit.
+ Remember**: This is a demonstration/educational project. For production use with sensitive data, implement additional security measures and conduct a security audit.
 
-**💡 Tip**: Keep regular backups of your `.svfsdb` files and store passwords securely!
+** Tip**: Keep regular backups of your `.svfsdb` files and store passwords securely!

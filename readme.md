@@ -92,7 +92,7 @@ Unlike traditional file systems, SVFS stores **ALL file content inside an SQLite
 5. **Edit Anytime**: Right-click → Edit (even encrypted files)
 6. **Export When Needed**: Right-click → Export (extract to disk)
 
-## 🛠️ Building
+##  Building
 
 ### Windows Qt MinGW (Recommended)
 ```cmd
@@ -129,7 +129,7 @@ make -j$(nproc)
 ./SecureVFS
 ```
 
-## 📚 Usage Examples
+##  Usage Examples
 
 ### Creating a Secure Document Vault
 

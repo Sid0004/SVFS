@@ -10,7 +10,7 @@ A robust, secure file management system with built-in encryption, compression, a
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/542d35e8-f442-439e-ab7c-2ec1c444a027" />
 
 
-## 🚀 Quick Start
+##  Quick Start
 
 Use MinGW Qt toolchain (matching provided binaries) + OpenSSL.
 
@@ -70,7 +70,7 @@ If the app exits immediately, create a user first (New VFS) or add logging. A de
 - **Themes**: System/Light/Dark/High Contrast with persistence
 - **File Properties**: Detailed info incl. detected encryption algorithm and compression flag
 
-## 📖 How It Works
+##  How It Works
 
 ### The VFS Concept
 Unlike traditional file systems, SVFS stores **ALL file content inside an SQLite database**:
